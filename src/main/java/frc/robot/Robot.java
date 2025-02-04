@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -25,40 +24,40 @@ public class Robot extends TimedRobot {
 
   NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
   double limelightX = 0.0;
+  double limelightZ = 0.0;
+  final static double deadband = 0.05;
 
   public Robot() {
+    frontLeft.setInverted(true);
+    backLeft.setInverted(true);
   }
 
   @Override
   public void robotPeriodic() {
     limelightX = limelightTable.getEntry("tx").getDouble(0.0);
+    limelightZ = limelightTable.getEntry("ta").getDouble(0.0);
     SmartDashboard.putNumber("LimeLight X", limelightX);
-
+    SmartDashboard.putNumber("LimeLight Z", limelightZ);
   }
 
   @Override
   public void autonomousInit() {
   }
 
-  double deadband = 5.0;
-
 
   @Override
   public void autonomousPeriodic() {
-    if(!(limelightX < deadband && limelightX > -deadband)) { //If the apriltag is outside the deadband zone rotate
-      if(limelightX < 0) { //value is negative, rotate right
-        backRight.set(TalonSRXControlMode.PercentOutput, -0.4);
-        backLeft.set(TalonSRXControlMode.PercentOutput, -0.4);
-
-      } else { //value is positive, rotate left
-        backRight.set(TalonSRXControlMode.PercentOutput, 0.4);
-        backLeft.set(TalonSRXControlMode.PercentOutput, 0.4);
-      }
-    } else {
-      backRight.set(TalonSRXControlMode.PercentOutput, 0.0);
-        backLeft.set(TalonSRXControlMode.PercentOutput, 0.0);
+    double speed = limelightX / 35;
+    if (speed > 1) {
+      speed = 1;
+    } else if (speed < -1) {
+      speed = -1;
+    } else if (speed < deadband && speed > -deadband) {
+      speed = 0;
     }
-
+    SmartDashboard.putNumber("Speed", speed);
+    backRight.set(TalonSRXControlMode.PercentOutput, -speed);
+    backLeft.set(TalonSRXControlMode.PercentOutput, speed);
   }
 
   @Override
@@ -87,7 +86,7 @@ public class Robot extends TimedRobot {
     );
     backLeft.set(
       TalonSRXControlMode.PercentOutput,
-      driverXboxController.getRightY() * speedMultiplier
+      driverXboxController.getLeftY() * speedMultiplier
     );
   }
 
@@ -102,14 +101,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    if(!(limelightX < deadband && limelightX > -deadband)) { //If the apriltag is outside the deadband zone rotate
+    if(!(limelightX < deadband * 100 && limelightX > -deadband * 100)) { //If the apriltag is outside the deadband zone rotate
       if(limelightX < 0) { //value is negative, rotate right
         backRight.set(TalonSRXControlMode.PercentOutput, -driverXboxController.getRightY());
-        backLeft.set(TalonSRXControlMode.PercentOutput, -driverXboxController.getRightY());
+        backLeft.set(TalonSRXControlMode.PercentOutput, driverXboxController.getRightY());
 
       } else { //value is positive, rotate left
         backRight.set(TalonSRXControlMode.PercentOutput, driverXboxController.getRightY());
-        backLeft.set(TalonSRXControlMode.PercentOutput, driverXboxController.getRightY());
+        backLeft.set(TalonSRXControlMode.PercentOutput, -driverXboxController.getRightY());
       }
     } else {
       backRight.set(TalonSRXControlMode.PercentOutput, 0.0);
