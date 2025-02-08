@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-  private final XboxController driverXboxController = new XboxController(0);
-  private final TalonSRX backRight = new TalonSRX(4);
-  private final TalonSRX frontRight = new TalonSRX(3);
-  private final TalonSRX frontLeft = new TalonSRX(2);
-  private final TalonSRX backLeft = new TalonSRX(1);
+  private final XboxController driverXboxController = new XboxController(GameControllerPort.DRIVER.getValue());
+  private final TalonSRX backRight = new TalonSRX(MotorControllerPort.BACK_RIGHT);
+  private final TalonSRX frontRight = new TalonSRX(MotorControllerPort.FRONT_RIGHT.getValue());
+  private final TalonSRX frontLeft = new TalonSRX(MotorControllerPort.FRONT_LEFT.getValue());
+  private final TalonSRX backLeft = new TalonSRX(MotorControllerPort.BACK_LEFT.getValue());
 
   final static double TURBO_SPEED = 1;
   final static double REGULAR_SPEED = 0.75;
