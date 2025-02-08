@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-  private final XboxController driverXboxController = new XboxController(GameControllerPort.DRIVER.getValue());
+  private final XboxController driverXboxController = new XboxController(GameControllerPort.DRIVER);
   private final TalonSRX backRight = new TalonSRX(MotorControllerPort.BACK_RIGHT);
-  private final TalonSRX frontRight = new TalonSRX(MotorControllerPort.FRONT_RIGHT.getValue());
-  private final TalonSRX frontLeft = new TalonSRX(MotorControllerPort.FRONT_LEFT.getValue());
-  private final TalonSRX backLeft = new TalonSRX(MotorControllerPort.BACK_LEFT.getValue());
+  private final TalonSRX frontRight = new TalonSRX(MotorControllerPort.FRONT_RIGHT);
+  private final TalonSRX frontLeft = new TalonSRX(MotorControllerPort.FRONT_LEFT);
+  private final TalonSRX backLeft = new TalonSRX(MotorControllerPort.BACK_LEFT);
 
   final static double TURBO_SPEED = 1;
   final static double REGULAR_SPEED = 0.75;
@@ -72,9 +72,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    if (driverXboxController.getRightBumper()) {
+    if (driverXboxController.getRightBumperButton()) {
       speedMultiplier = TURTLE_SPEED;
-    } else if (driverXboxController.getLeftBumper()) {
+    } else if (driverXboxController.getLeftBumperButton()) {
       speedMultiplier = TURBO_SPEED;
     } else {
       speedMultiplier = REGULAR_SPEED;
