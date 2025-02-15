@@ -9,9 +9,10 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.IO.GameController;
 
 public class Robot extends TimedRobot {
-  private final XboxController driverXboxController = new XboxController(GameControllerPort.DRIVER);
+  private GameController driverXboxController;
   private final TalonSRX backRight = new TalonSRX(MotorControllerPort.BACK_RIGHT);
   private final TalonSRX frontRight = new TalonSRX(MotorControllerPort.FRONT_RIGHT);
   private final TalonSRX frontLeft = new TalonSRX(MotorControllerPort.FRONT_LEFT);
@@ -30,6 +31,8 @@ public class Robot extends TimedRobot {
   public Robot() {
     frontLeft.setInverted(true);
     backLeft.setInverted(true);
+
+    GameController.initSmartboard();
   }
 
   @Override
@@ -68,13 +71,17 @@ public class Robot extends TimedRobot {
     backLeft.setNeutralMode(NeutralMode.Brake);
     frontRight.set(TalonSRXControlMode.Follower, 4);
     frontLeft.set(TalonSRXControlMode.Follower, 1);
+
+    GameController.initController();
+
+    driverXboxController = GameController.controller;
   }
 
   @Override
   public void teleopPeriodic() {
-    if (driverXboxController.getRightBumperButton()) {
+    if (driverXboxController.getRightBumper()) {
       speedMultiplier = TURTLE_SPEED;
-    } else if (driverXboxController.getLeftBumperButton()) {
+    } else if (driverXboxController.getLeftBumper()) {
       speedMultiplier = TURBO_SPEED;
     } else {
       speedMultiplier = REGULAR_SPEED;
