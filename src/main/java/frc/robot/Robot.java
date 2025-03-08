@@ -14,7 +14,7 @@ import frc.robot.IO.GameController;
 import frc.robot.options.DrivetrainOption;
 
 public class Robot extends TimedRobot {
-  private GameController driverController;
+  private GameController driverController = new GameController(0);
   private final WPI_TalonSRX backRight = new WPI_TalonSRX(MotorControllerPort.BACK_RIGHT);
   private final WPI_TalonSRX frontRight = new WPI_TalonSRX(MotorControllerPort.FRONT_RIGHT);
   private final WPI_TalonSRX frontLeft = new WPI_TalonSRX(MotorControllerPort.FRONT_LEFT);
@@ -76,7 +76,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    driverController = new GameController(0);
   }
 
   @Override
@@ -127,7 +126,6 @@ public class Robot extends TimedRobot {
       if (limelightX < 0) {
         backRight.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
-
       } else {
         backRight.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
