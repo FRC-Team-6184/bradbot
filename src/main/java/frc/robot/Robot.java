@@ -6,12 +6,12 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import frc.robot.IO.GameController;
+import frc.robot.options.DrivetrainOption;
 
 public class Robot extends TimedRobot {
   private GameController driverController;
@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
 
   private DifferentialDrive robotDrive = new DifferentialDrive(backRight::set, backLeft::set);
 
-  private final SendableChooser<String> driveTrainOption = new SendableChooser<>();
+  private final DrivetrainOption driveTrainOption = new DrivetrainOption();
 
   final static double TURBO_SPEED = 1;
   final static double REGULAR_SPEED = 0.75;
@@ -47,11 +47,6 @@ public class Robot extends TimedRobot {
     backLeft.setNeutralMode(NeutralMode.Brake);
     frontRight.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_RIGHT);
     frontLeft.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_LEFT);
-
-    driveTrainOption.setDefaultOption("Tank Drive", "tankDrive");
-    driveTrainOption.addOption("Arcade Drive", "arcadeDrive");
-    driveTrainOption.addOption("Curvature Drive", "curvatureDrive");
-    SmartDashboard.putData("Drivetrains", driveTrainOption);
   }
 
   @Override
