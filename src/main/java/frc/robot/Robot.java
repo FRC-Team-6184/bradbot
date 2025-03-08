@@ -39,8 +39,6 @@ public class Robot extends TimedRobot {
     frontLeft.setInverted(true);
     backLeft.setInverted(true);
 
-    GameController.initSmartboard();
-
     frontRight.setNeutralMode(NeutralMode.Brake);
     frontLeft.setNeutralMode(NeutralMode.Brake);
     backRight.setNeutralMode(NeutralMode.Brake);
@@ -78,9 +76,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    GameController.initController();
-
-    driverController = GameController.controller;
+    driverController = new GameController(0);
   }
 
   @Override
@@ -126,13 +122,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    if (!(limelightX < deadband * 100 && limelightX > -deadband * 100)) { // If the apriltag is outside the deadband
-                                                                          // zone rotate
-      if (limelightX < 0) { // value is negative, rotate right
+    // If the apriltag is outside the deadband zone rotate
+    if (!(limelightX < deadband * 100 && limelightX > -deadband * 100)) {
+      if (limelightX < 0) {
         backRight.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
 
-      } else { // value is positive, rotate left
+      } else {
         backRight.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
       }
