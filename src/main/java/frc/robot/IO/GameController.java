@@ -10,21 +10,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class GameController {
     public static final int DRIVER = 0;
 
-    public enum SelectedController {
-        XBOX,
-        PS5,
-        PS4
-    }
+    public enum ControllerTypes {XBOX, PS5, PS4};
 
     private static SendableChooser<String> dropdown = new SendableChooser<String>();
-    private static final String[] DROPDOWN_OPTIONS = { "XBox Controller", "PS5 Controller", "PS4 Controller" };
-    private static SelectedController[] SelectedControllerArray = { SelectedController.XBOX, SelectedController.PS5,
-            SelectedController.PS4 };
-    private static SelectedController selection;
-
+    private static ControllerTypes selection;
     public static GameController controller;
-
     private GenericHID internalController;
+
+    public GameController(int port) {
+        internalController = new GenericHID(port);
+    }
 
     /**
      * Must be ran before interacting with the controller. Takes selection from
@@ -33,38 +28,25 @@ public class GameController {
     public static void initController() {
         String selectedFromDashboard = dropdown.getSelected();
 
-        for (int i = 0; i < DROPDOWN_OPTIONS.length; i++) {
-            if (selectedFromDashboard.equals(DROPDOWN_OPTIONS[i])) {
-                selection = SelectedControllerArray[i];
+        for (ControllerTypes option : ControllerTypes.values()) {
+            if (selectedFromDashboard.equals(option.toString())) {
+                selection = option;
                 controller = new GameController(DRIVER);
-                return; // Ends method early
+                return;
             }
         }
 
-        // If the method gets here something has gone wrong, defaulting to Xbox
-        selection = SelectedControllerArray[0];
+        // If the method gets here, something has gone wrong. Defaulting to Xbox.
+        selection = ControllerTypes.XBOX;
         controller = new GameController(DRIVER);
     }
 
-    /**
-     * Or shuffleboard, they use pretty much the same API
-     *
-     * Initializes dropdowns and such that are controller related
-     */
     public static void initSmartboard() {
-        for (int i = 0; i < DROPDOWN_OPTIONS.length; i++) { // Sets up the dropdown
-            dropdown.addOption(DROPDOWN_OPTIONS[i], DROPDOWN_OPTIONS[i]);
+        for (ControllerTypes option : ControllerTypes.values()) {
+            dropdown.addOption(option.toString(), option.toString());
         }
-
-        dropdown.setDefaultOption(DROPDOWN_OPTIONS[0], DROPDOWN_OPTIONS[0]); // Makes sure we you don't have to do
-                                                                             // anything as long as you're using an XBox
-                                                                             // Controller
-
-        SmartDashboard.putData(dropdown); // actually puts it on the dashboard
-    }
-
-    public GameController(int port) {
-        internalController = new GenericHID(port);
+        dropdown.setDefaultOption(ControllerTypes.XBOX.toString(), ControllerTypes.XBOX.toString());
+        SmartDashboard.putData(dropdown);
     }
 
     public double getLeftX() {
@@ -178,22 +160,6 @@ public class GameController {
         }
     }
 
-    public boolean getFaceButtonDown() {
-        switch (selection) {
-            case XBOX:
-                return internalController.getRawButton(XboxController.Button.kA.value);
-
-            case PS5:
-                return internalController.getRawButton(PS5Controller.Button.kCross.value);
-
-            case PS4:
-                return internalController.getRawButton(PS4Controller.Button.kCross.value);
-
-            default:
-                return false;
-        }
-    }
-
     public boolean getFaceButtonLeft() {
         switch (selection) {
             case XBOX:
@@ -242,4 +208,19 @@ public class GameController {
         }
     }
 
+    public boolean getFaceButtonDown() {
+        switch (selection) {
+            case XBOX:
+                return internalController.getRawButton(XboxController.Button.kA.value);
+
+            case PS5:
+                return internalController.getRawButton(PS5Controller.Button.kCross.value);
+
+            case PS4:
+                return internalController.getRawButton(PS4Controller.Button.kCross.value);
+
+            default:
+                return false;
+        }
+    }
 }
