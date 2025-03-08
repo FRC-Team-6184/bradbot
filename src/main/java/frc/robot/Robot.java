@@ -48,10 +48,10 @@ public class Robot extends TimedRobot {
     frontRight.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_RIGHT);
     frontLeft.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_LEFT);
 
-    driveTrainOption.setDefaultOption("Trank Drive", "tankDrive");
+    driveTrainOption.setDefaultOption("Tank Drive", "tankDrive");
     driveTrainOption.addOption("Arcade Drive", "arcadeDrive");
     driveTrainOption.addOption("Curvature Drive", "curvatureDrive");
-    SmartDashboard.putData("Drive Trains", driveTrainOption);
+    SmartDashboard.putData("Drivetrains", driveTrainOption);
   }
 
   @Override
@@ -97,8 +97,14 @@ public class Robot extends TimedRobot {
     } else {
       speedMultiplier = REGULAR_SPEED;
     }
+    if (driveTrainOption.getSelected() == "tankDrive") {
+      robotDrive.tankDrive(driverController.getLeftY() * speedMultiplier, driverController.getRightY() * speedMultiplier);
+    } else if (driveTrainOption.getSelected() == "arcadeDrive") {
+      robotDrive.arcadeDrive(driverController.getLeftY() * speedMultiplier, -driverController.getLeftX() * speedMultiplier);
+    } else {
+      robotDrive.curvatureDrive(driverController.getLeftY() * speedMultiplier, -driverController.getRightX() * speedMultiplier, true);
+    }
 
-    robotDrive.tankDrive(driverController.getLeftY() * speedMultiplier, driverController.getRightY() * speedMultiplier);
   }
 
   @Override
