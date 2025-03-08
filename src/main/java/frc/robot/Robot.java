@@ -1,22 +1,28 @@
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.TimedRobot;
-
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.XboxController;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 import frc.robot.IO.GameController;
 
 public class Robot extends TimedRobot {
-  private GameController driverXboxController;
-  private final TalonSRX backRight = new TalonSRX(MotorControllerPort.BACK_RIGHT);
-  private final TalonSRX frontRight = new TalonSRX(MotorControllerPort.FRONT_RIGHT);
-  private final TalonSRX frontLeft = new TalonSRX(MotorControllerPort.FRONT_LEFT);
-  private final TalonSRX backLeft = new TalonSRX(MotorControllerPort.BACK_LEFT);
+  private GameController driverController;
+  private final WPI_TalonSRX backRight = new WPI_TalonSRX(MotorControllerPort.BACK_RIGHT);
+  private final WPI_TalonSRX frontRight = new WPI_TalonSRX(MotorControllerPort.FRONT_RIGHT);
+  private final WPI_TalonSRX frontLeft = new WPI_TalonSRX(MotorControllerPort.FRONT_LEFT);
+  private final WPI_TalonSRX backLeft = new WPI_TalonSRX(MotorControllerPort.BACK_LEFT);
+
+  private DifferentialDrive robotDrive = new DifferentialDrive(backRight::set, backLeft::set);
+
+  private final SendableChooser<String> driveTrainOption = new SendableChooser<>();
 
   final static double TURBO_SPEED = 1;
   final static double REGULAR_SPEED = 0.75;
@@ -28,11 +34,24 @@ public class Robot extends TimedRobot {
   double limelightZ = 0.0;
   final static double deadband = 0.05;
 
-  public Robot() {
+  @Override
+  public void robotInit() {
     frontLeft.setInverted(true);
     backLeft.setInverted(true);
 
     GameController.initSmartboard();
+
+    frontRight.setNeutralMode(NeutralMode.Brake);
+    frontLeft.setNeutralMode(NeutralMode.Brake);
+    backRight.setNeutralMode(NeutralMode.Brake);
+    backLeft.setNeutralMode(NeutralMode.Brake);
+    frontRight.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_RIGHT);
+    frontLeft.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_LEFT);
+
+    driveTrainOption.setDefaultOption("Trank Drive", "tankDrive");
+    driveTrainOption.addOption("Arcade Drive", "arcadeDrive");
+    driveTrainOption.addOption("Curvature Drive", "curvatureDrive");
+    SmartDashboard.putData("Drive Trains", driveTrainOption);
   }
 
   @Override
@@ -46,7 +65,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
   }
-
 
   @Override
   public void autonomousPeriodic() {
@@ -65,36 +83,22 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    frontRight.setNeutralMode(NeutralMode.Brake);
-    frontLeft.setNeutralMode(NeutralMode.Brake);
-    backRight.setNeutralMode(NeutralMode.Brake);
-    backLeft.setNeutralMode(NeutralMode.Brake);
-    frontRight.set(TalonSRXControlMode.Follower, 4);
-    frontLeft.set(TalonSRXControlMode.Follower, 1);
-
     GameController.initController();
 
-    driverXboxController = GameController.controller;
+    driverController = GameController.controller;
   }
 
   @Override
   public void teleopPeriodic() {
-    if (driverXboxController.getRightBumper()) {
+    if (driverController.getRightBumper()) {
       speedMultiplier = TURTLE_SPEED;
-    } else if (driverXboxController.getLeftBumper()) {
+    } else if (driverController.getLeftBumper()) {
       speedMultiplier = TURBO_SPEED;
     } else {
       speedMultiplier = REGULAR_SPEED;
     }
 
-    backRight.set(
-      TalonSRXControlMode.PercentOutput,
-      driverXboxController.getRightY() * speedMultiplier
-    );
-    backLeft.set(
-      TalonSRXControlMode.PercentOutput,
-      driverXboxController.getLeftY() * speedMultiplier
-    );
+    robotDrive.tankDrive(driverController.getLeftY() * speedMultiplier, driverController.getRightY() * speedMultiplier);
   }
 
   @Override
@@ -110,12 +114,12 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     if(!(limelightX < deadband * 100 && limelightX > -deadband * 100)) { //If the apriltag is outside the deadband zone rotate
       if(limelightX < 0) { //value is negative, rotate right
-        backRight.set(TalonSRXControlMode.PercentOutput, -driverXboxController.getRightY());
-        backLeft.set(TalonSRXControlMode.PercentOutput, driverXboxController.getRightY());
+        backRight.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
+        backLeft.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
 
       } else { //value is positive, rotate left
-        backRight.set(TalonSRXControlMode.PercentOutput, driverXboxController.getRightY());
-        backLeft.set(TalonSRXControlMode.PercentOutput, -driverXboxController.getRightY());
+        backRight.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
+        backLeft.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
       }
     } else {
       backRight.set(TalonSRXControlMode.PercentOutput, 0.0);
