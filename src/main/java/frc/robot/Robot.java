@@ -97,45 +97,61 @@ public class Robot extends TimedRobot {
     } else {
       speedMultiplier = REGULAR_SPEED;
     }
-    if (driveTrainOption.getSelected() == "tankDrive") {
-      robotDrive.tankDrive(driverController.getLeftY() * speedMultiplier, driverController.getRightY() * speedMultiplier);
-    } else if (driveTrainOption.getSelected() == "arcadeDrive") {
-      robotDrive.arcadeDrive(driverController.getLeftY() * speedMultiplier, -driverController.getLeftX() * speedMultiplier);
-    } else {
-      robotDrive.curvatureDrive(driverController.getLeftY() * speedMultiplier, -driverController.getRightX() * speedMultiplier, true);
-    }
 
+    switch (driveTrainOption.getSelected()) {
+      case "tankDrive":
+        robotDrive.tankDrive(
+            driverController.getLeftY() * speedMultiplier,
+            driverController.getRightY() * speedMultiplier);
+        break;
+      case "arcadeDrive":
+        robotDrive.arcadeDrive(
+            driverController.getLeftY() * speedMultiplier,
+            -driverController.getLeftX() * speedMultiplier);
+        break;
+      case "curvatureDrive":
+        robotDrive.curvatureDrive(
+            driverController.getLeftY() * speedMultiplier,
+            -driverController.getRightX() * speedMultiplier,
+            true);
+    }
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   @Override
   public void testPeriodic() {
-    if(!(limelightX < deadband * 100 && limelightX > -deadband * 100)) { //If the apriltag is outside the deadband zone rotate
-      if(limelightX < 0) { //value is negative, rotate right
+    if (!(limelightX < deadband * 100 && limelightX > -deadband * 100)) { // If the apriltag is outside the deadband
+                                                                          // zone rotate
+      if (limelightX < 0) { // value is negative, rotate right
         backRight.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
 
-      } else { //value is positive, rotate left
+      } else { // value is positive, rotate left
         backRight.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
       }
     } else {
       backRight.set(TalonSRXControlMode.PercentOutput, 0.0);
-        backLeft.set(TalonSRXControlMode.PercentOutput, 0.0);
+      backLeft.set(TalonSRXControlMode.PercentOutput, 0.0);
     }
   }
 
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }
