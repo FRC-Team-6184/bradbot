@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
   private final WPI_TalonSRX frontLeft = new WPI_TalonSRX(MotorControllerPort.FRONT_LEFT);
   private final WPI_TalonSRX backLeft = new WPI_TalonSRX(MotorControllerPort.BACK_LEFT);
 
-  private DifferentialDrive robotDrive = new DifferentialDrive(backRight::set, backLeft::set);
+  private DifferentialDrive robotDrive = new DifferentialDrive(backLeft::set, backRight::set);
 
   private final DrivetrainOption driveTrainOption = new DrivetrainOption();
 
