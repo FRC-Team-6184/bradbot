@@ -1,6 +1,8 @@
-//LimelightHelpers v1.11 (REQUIRES LLOS 2025.0 OR LATER)
+// LimelightHelpers v1.11 (REQUIRES LLOS 2025.0 OR LATER)
+// Source: https://github.com/LimelightVision/limelightlib-wpijava
+// Documentation: https://docs.limelightvision.io/docs/docs-limelight/apis/limelight-lib
 
-package frc.robot;
+package frc.robot.Limelight;
 
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.NetworkTable;
@@ -921,8 +923,11 @@ public class LimelightHelpers {
         }
         return null;
     }
+
     /////
-    /////
+    public static boolean getTV() {
+        return getTV("");
+    }
 
     /**
      * Does the Limelight have a valid target?
@@ -932,6 +937,10 @@ public class LimelightHelpers {
      */
     public static boolean getTV(String limelightName) {
         return 1.0 == getLimelightNTDouble(limelightName, "tv");
+    }
+
+    public static double getTX() {
+        return getTX("");
     }
 
     /**
@@ -944,6 +953,10 @@ public class LimelightHelpers {
         return getLimelightNTDouble(limelightName, "tx");
     }
 
+    public static double getTY() {
+        return getTY("");
+    }
+
     /**
      * Gets the vertical offset from the crosshair to the target in degrees.
      * 
@@ -952,6 +965,10 @@ public class LimelightHelpers {
      */
     public static double getTY(String limelightName) {
         return getLimelightNTDouble(limelightName, "ty");
+    }
+
+    public static double getTXNC() {
+        return getTXNC("");
     }
 
     /**
@@ -966,6 +983,10 @@ public class LimelightHelpers {
         return getLimelightNTDouble(limelightName, "txnc");
     }
 
+    public static double getTYNC() {
+        return getTYNC();
+    }
+
     /**
      * Gets the vertical offset from the principal pixel/point to the target in
      * degrees. This is the most accurate 2d metric if you are using a calibrated
@@ -978,6 +999,10 @@ public class LimelightHelpers {
         return getLimelightNTDouble(limelightName, "tync");
     }
 
+    public static double getTA() {
+        return getTA("");
+    }
+
     /**
      * Gets the target area as a percentage of the image (0-100%).
      * 
@@ -986,6 +1011,10 @@ public class LimelightHelpers {
      */
     public static double getTA(String limelightName) {
         return getLimelightNTDouble(limelightName, "ta");
+    }
+
+    public static double[] getT2DArray() {
+        return getT2DArray("");
     }
 
     /**
@@ -1003,6 +1032,10 @@ public class LimelightHelpers {
         return getLimelightNTDoubleArray(limelightName, "t2d");
     }
 
+    public static int getTargetCount() {
+        return getTargetCount("");
+    }
+
     /**
      * Gets the number of targets currently detected.
      * 
@@ -1015,6 +1048,10 @@ public class LimelightHelpers {
             return (int) t2d[1];
         }
         return 0;
+    }
+
+    public static int getClassifierClassIndex() {
+        return getClassifierClassIndex("");
     }
 
     /**
@@ -1032,6 +1069,10 @@ public class LimelightHelpers {
         return 0;
     }
 
+    public static int getDetectorClassIndex() {
+        return getDetectorClassIndex("");
+    }
+
     /**
      * Gets the detector class index from the primary result of the currently
      * running neural detector pipeline.
@@ -1047,6 +1088,10 @@ public class LimelightHelpers {
         return 0;
     }
 
+    public static String getClassifierClass() {
+        return getClassifierClass("");
+    }
+
     /**
      * Gets the current neural classifier result class name.
      * 
@@ -1055,6 +1100,10 @@ public class LimelightHelpers {
      */
     public static String getClassifierClass(String limelightName) {
         return getLimelightNTString(limelightName, "tcclass");
+    }
+
+    public static String getDetectorClass() {
+        return getDetectorClass("");
     }
 
     /**
@@ -1067,6 +1116,10 @@ public class LimelightHelpers {
         return getLimelightNTString(limelightName, "tdclass");
     }
 
+    public static double getLatency_Pipeline() {
+        return getLatency_Pipeline("");
+    }
+
     /**
      * Gets the pipeline's processing latency contribution.
      * 
@@ -1077,6 +1130,10 @@ public class LimelightHelpers {
         return getLimelightNTDouble(limelightName, "tl");
     }
 
+    public static double getLatency_Capture() {
+        return getLatency_Capture("");
+    }
+
     /**
      * Gets the capture latency.
      * 
@@ -1085,6 +1142,10 @@ public class LimelightHelpers {
      */
     public static double getLatency_Capture(String limelightName) {
         return getLimelightNTDouble(limelightName, "cl");
+    }
+
+    public static double getCurrentPipelineIndex() {
+        return getCurrentPipelineIndex("");
     }
 
     /**
@@ -1107,6 +1168,10 @@ public class LimelightHelpers {
         return getLimelightNTString(limelightName, "getpipetype");
     }
 
+    public static String getJSONDump() {
+        return getJSONDump("");
+    }
+
     /**
      * Gets the full JSON results dump.
      * 
@@ -1117,49 +1182,32 @@ public class LimelightHelpers {
         return getLimelightNTString(limelightName, "json");
     }
 
-    /**
-     * Switch to getBotPose
-     *
-     * @param limelightName
-     * @return
-     */
-    @Deprecated
-    public static double[] getBotpose(String limelightName) {
-        return getLimelightNTDoubleArray(limelightName, "botpose");
-    }
-
-    /**
-     * Switch to getBotPose_wpiRed
-     *
-     * @param limelightName
-     * @return
-     */
-    @Deprecated
-    public static double[] getBotpose_wpiRed(String limelightName) {
-        return getLimelightNTDoubleArray(limelightName, "botpose_wpired");
-    }
-
-    /**
-     * Switch to getBotPose_wpiBlue
-     *
-     * @param limelightName
-     * @return
-     */
-    @Deprecated
-    public static double[] getBotpose_wpiBlue(String limelightName) {
-        return getLimelightNTDoubleArray(limelightName, "botpose_wpiblue");
+    public static double[] getBotPose() {
+        return getBotPose("");
     }
 
     public static double[] getBotPose(String limelightName) {
         return getLimelightNTDoubleArray(limelightName, "botpose");
     }
 
+    public static double[] getBotPose_wpiRed() {
+        return getBotPose_wpiRed("");
+    }
+
     public static double[] getBotPose_wpiRed(String limelightName) {
         return getLimelightNTDoubleArray(limelightName, "botpose_wpired");
     }
 
+    public static double[] getBotPose_wpiBlue() {
+        return getBotPose_wpiBlue("");
+    }
+
     public static double[] getBotPose_wpiBlue(String limelightName) {
         return getLimelightNTDoubleArray(limelightName, "botpose_wpiblue");
+    }
+
+    public static double[] getBotPose_TargetSpace() {
+        return getBotPose_TargetSpace("");
     }
 
     public static double[] getBotPose_TargetSpace(String limelightName) {
