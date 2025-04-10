@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.CANifier.LEDChannel;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
@@ -9,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import frc.robot.IO.GameController;
+import frc.robot.IO.LEDControl;
 import frc.robot.Limelight.Limelight;
 import frc.robot.Limelight.LimelightHelpers;
 import frc.robot.options.DrivetrainOption;
@@ -43,12 +45,17 @@ public class Robot extends TimedRobot {
     backLeft.setNeutralMode(NeutralMode.Brake);
     frontRight.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_RIGHT);
     frontLeft.set(TalonSRXControlMode.Follower, MotorControllerPort.BACK_LEFT);
+
+    LEDControl.init();
   }
 
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("LimeLight X", LimelightHelpers.getTX());
     SmartDashboard.putNumber("LimeLight Z", LimelightHelpers.getTA());
+
+    LEDControl.update();
+
   }
 
   @Override
@@ -66,8 +73,9 @@ public class Robot extends TimedRobot {
       speed = 0;
     }
     SmartDashboard.putNumber("Speed", speed);
-    backRight.set(TalonSRXControlMode.PercentOutput, -speed);
-    backLeft.set(TalonSRXControlMode.PercentOutput, speed);
+    robotDrive.tankDrive(-speed, speed);
+
+    LEDControl.setSpeedPattern(-speed, speed);
   }
 
   @Override
@@ -100,7 +108,12 @@ public class Robot extends TimedRobot {
             driverController.getLeftY() * speedMultiplier,
             -driverController.getRightX() * speedMultiplier,
             true);
+          break;
+      default:
+        robotDrive.stopMotor();
     }
+
+    LEDControl.setSpeedPattern(backLeft.get(), backRight.get());
   }
 
   @Override
@@ -109,6 +122,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    LEDControl.setRainbow();
   }
 
   @Override
@@ -130,6 +144,7 @@ public class Robot extends TimedRobot {
       backRight.set(TalonSRXControlMode.PercentOutput, 0.0);
       backLeft.set(TalonSRXControlMode.PercentOutput, 0.0);
     }
+
   }
 
   @Override
