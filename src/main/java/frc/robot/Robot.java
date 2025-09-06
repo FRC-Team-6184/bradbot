@@ -32,7 +32,8 @@ public class Robot extends TimedRobot {
   double speedMultiplier = REGULAR_SPEED;
 
   Limelight limelight = new Limelight();
-  final static double deadband = 0.05;
+  final static double leftrightDeadband = 0.05;
+  final static double distanceDeadband = 0.1;
 
   @Override
   public void robotInit() {
@@ -65,17 +66,42 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     double speed = LimelightHelpers.getTX() / 35;
+    double limelightDistance = LimelightHelpers.getTA() - 1.25; //goal is 1.25
     if (speed > 1) {
       speed = 1;
+
+      SmartDashboard.putNumber("Speed", speed);
+      robotDrive.tankDrive(-speed, speed);
+  
+      LEDControl.setSpeedPattern(-speed, speed);
     } else if (speed < -1) {
       speed = -1;
-    } else if (speed < deadband && speed > -deadband) {
-      speed = 0;
-    }
-    SmartDashboard.putNumber("Speed", speed);
-    robotDrive.tankDrive(-speed, speed);
 
-    LEDControl.setSpeedPattern(-speed, speed);
+      SmartDashboard.putNumber("Speed", speed);
+      robotDrive.tankDrive(-speed, speed);
+  
+      LEDControl.setSpeedPattern(-speed, speed);
+    } else if (speed < leftrightDeadband && speed > -leftrightDeadband) {
+      speed = 0;
+
+      if((limelightDistance < distanceDeadband && limelightDistance > -distanceDeadband) || limelightDistance <= -1.2) {
+        //do nothing
+      robotDrive.tankDrive(0, 0);
+
+      } else if (limelightDistance < 0) {
+        // go forward
+        robotDrive.tankDrive(-0.4, -0.4);
+      LEDControl.setSpeedPattern(0.4, 0.4);
+
+      } else if(limelightDistance > 0) {
+        //go backwards
+        robotDrive.tankDrive(0.4, 0.4);
+      LEDControl.setSpeedPattern(-0.4, -0.4);
+
+      }
+      
+    }
+
   }
 
   @Override
@@ -132,7 +158,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     // If the apriltag is outside the deadband zone rotate
-    if (!(LimelightHelpers.getTX() < deadband * 100 && LimelightHelpers.getTX() > -deadband * 100)) {
+    if (!(LimelightHelpers.getTX() < leftrightDeadband * 100 && LimelightHelpers.getTX() > -leftrightDeadband * 100)) {
       if (LimelightHelpers.getTX() < 0) {
         backRight.set(TalonSRXControlMode.PercentOutput, -driverController.getRightY());
         backLeft.set(TalonSRXControlMode.PercentOutput, driverController.getRightY());

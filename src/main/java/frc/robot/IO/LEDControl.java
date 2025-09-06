@@ -24,14 +24,18 @@ public class LEDControl {
 
     public static LEDPattern solidWhite = LEDPattern.solid(Color.kWhite);
     public static LEDPattern solidBlack = LEDPattern.solid(Color.kBlack);
-    public static LEDPattern rainbow = LEDPattern.rainbow(255, 255);
-    public static LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(Units.Percent.per(Units.Second).of(35));
+    public static LEDPattern rainbow = LEDPattern.rainbow(255, 150);
+    public static LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(Units.Percent.per(Units.Second).of(35)).atBrightness(Units.Percent.of(55));
+    public static LEDPattern rainbowMask = LEDPattern.solid(Color.kSlateGray);
+    public static LEDPattern maskedScrollingRainbow = scrollingRainbow.mask(rainbowMask);
 
     public static LEDPattern speedGradient = LEDPattern.gradient(GradientType.kDiscontinuous, Color.kGreen, Color.kYellow, Color.kOrangeRed, Color.kRed); 
     public static LEDPattern leftMask = LEDPattern.solid(Color.kWhite);
     public static LEDPattern rightMask = LEDPattern.solid(Color.kWhite);
     public static LEDPattern leftSpeed = speedGradient.mask(leftMask);
     public static LEDPattern rightSpeed = speedGradient.mask(rightMask);
+
+
 
     //for testing
     public static void setLeftWhite() {
@@ -41,6 +45,7 @@ public class LEDControl {
     //pretty!
     public static void setRainbow() {
         scrollingRainbow.applyTo(allLEDSBuffer);
+        // maskedScrollingRainbow.applyTo(allLEDSBuffer);
     }
 
     public static void setSpeedPattern(double leftValue, double rightValue) {
@@ -49,8 +54,11 @@ public class LEDControl {
         leftMask = LEDPattern.progressMaskLayer(() -> Math.abs(leftValue));
         rightMask = LEDPattern.progressMaskLayer(() -> Math.abs(rightValue));
 
-        leftSpeed = speedGradient.mask(leftMask);
-        rightSpeed = speedGradient.mask(rightMask);
+        // leftSpeed = speedGradient.mask(leftMask);
+        // rightSpeed = speedGradient.mask(rightMask);
+
+        leftSpeed = scrollingRainbow.mask(leftMask);
+        rightSpeed = scrollingRainbow.mask(rightMask);
 
         //Reverse the patterns if they're going back!
         if(leftValue > 0) {
